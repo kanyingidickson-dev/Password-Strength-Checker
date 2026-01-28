@@ -1,5 +1,7 @@
 # Password Strength Checker
 
+![CI](https://github.com/kanyingidickson-dev/Password-Strength-Checker/actions/workflows/ci.yml/badge.svg)
+
 A local password analysis tool that produces a clear strength score and explanations.
 
 The goal is not “perfect security math” — it’s practical, explainable checks that map to common real‑world password failures.
