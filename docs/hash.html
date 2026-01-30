@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">Hash / HMAC</h1>
@@ -31,12 +37,13 @@
       </div>
 
       <section aria-label="Hash and HMAC">
-        <div class="grid grid-2">
-          <div class="card span-7">
+        <div class="grid crypto-grid">
+          <div class="card">
             <h2>Inputs</h2>
             <div class="field">
               <label for="crypto-text">Text</label>
-              <textarea id="crypto-text" rows="6" spellcheck="false"></textarea>
+              <textarea id="crypto-text" rows="3" spellcheck="false" placeholder="Type or paste text to hash"></textarea>
+              <div class="hint">Hashing is one-way: it creates a fingerprint of the text. It does not reveal the original.</div>
             </div>
             <div class="form-grid">
               <div class="field">
@@ -58,33 +65,32 @@
             </div>
             <div class="field">
               <label for="hmac-key">HMAC key (optional)</label>
-              <input id="hmac-key" type="password" autocomplete="off" spellcheck="false" />
-              <div class="hint">If set, the tool computes an HMAC instead of a plain digest.</div>
+              <div class="input-row">
+                <input id="hmac-key" type="password" autocomplete="off" spellcheck="false" placeholder="Secret key (only needed for HMAC)" />
+                <button id="toggle-hmac-key" class="btn btn-secondary" type="button">Show</button>
+              </div>
+              <div class="hint">HMAC is a keyed hash used to prove the message came from someone with the key.</div>
             </div>
             <div class="row">
               <button id="do-hash" class="btn" type="button">Compute</button>
             </div>
           </div>
 
-          <div class="card span-5">
+          <div class="card">
             <h2>Output</h2>
             <div class="row">
               <button id="copy-hash" class="btn btn-secondary" type="button">Copy</button>
             </div>
-            <div class="output" id="hash-out">—</div>
+            <div class="output is-empty" id="hash-out">—</div>
             <div class="field">
               <label for="hash-expected">Expected output (optional)</label>
-              <input id="hash-expected" type="text" spellcheck="false" />
-              <div class="hint">This verifies whether the computed value matches what you expect.</div>
+              <input id="hash-expected" type="text" spellcheck="false" placeholder="Paste an expected hash to verify (optional)" />
+              <div class="hint">Use this to check if the computed value matches a known good hash.</div>
             </div>
             <div class="pill" id="hash-match">—</div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
