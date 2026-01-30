@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">Password strength analysis</h1>
@@ -31,117 +37,138 @@
       </div>
 
       <section aria-label="Password strength analysis">
-        <div class="grid grid-2">
-          <div class="card span-6">
-            <h2>Check a password</h2>
-            <div class="field">
-              <label for="pwd">Password</label>
-              <div class="input-row">
-                <input id="pwd" type="password" autocomplete="off" spellcheck="false" />
-                <button id="toggle-visibility" class="btn btn-secondary" type="button">Show</button>
+        <div class="grid strength-grid">
+          <div class="stack">
+            <div class="card">
+              <h2>Check a password</h2>
+              <div class="field">
+                <label for="pwd">Password</label>
+                <div class="input-row">
+                  <input
+                    id="pwd"
+                    type="password"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Type or paste a password to analyze"
+                  />
+                  <button id="toggle-visibility" class="btn btn-secondary" type="button">Show</button>
+                </div>
+                <div class="hint">We never send or store it. If you need a strong one, use the Generator tab.</div>
               </div>
-              <div class="hint">Tip: use the generator page if you need something strong quickly.</div>
+
+              <div class="row">
+                <button id="analyze" class="btn" type="button">Analyze</button>
+                <button id="export-json" class="btn btn-secondary" type="button">Export JSON</button>
+                <button id="clear-history" class="btn btn-danger" type="button">Clear local history</button>
+              </div>
             </div>
 
-            <details class="details">
-              <summary class="details__summary">Advanced analysis settings</summary>
+            <div class="card">
+              <details class="details" id="advanced-details" open>
+                <summary class="details__summary">Advanced analysis</summary>
 
-              <div class="form-grid">
-                <div class="field">
-                  <label for="policy">Policy profile</label>
-                  <select id="policy">
-                    <option value="balanced" selected>Balanced</option>
-                    <option value="nist">NIST-style</option>
-                    <option value="strict">Strict</option>
-                  </select>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="policy">Policy profile</label>
+                    <select id="policy">
+                      <option value="balanced" selected>Balanced</option>
+                      <option value="nist">NIST-style</option>
+                      <option value="strict">Strict</option>
+                    </select>
+                    <div class="hint">Balanced is a good default for everyday passwords.</div>
+                  </div>
+                  <div class="field">
+                    <label for="dict-lang">Dictionary language</label>
+                    <select id="dict-lang">
+                      <option value="en" selected>English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                    </select>
+                    <div class="hint">Used to detect common words inside passwords.</div>
+                  </div>
                 </div>
+
                 <div class="field">
-                  <label for="dict-lang">Dictionary language</label>
-                  <select id="dict-lang">
-                    <option value="en" selected>English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                  </select>
+                  <label>Checks</label>
+                  <label class="check"><input id="toggle-patterns" type="checkbox" checked /> Pattern checks (1234, qwerty, repeats)</label>
+                  <label class="check"><input id="toggle-dictionary" type="checkbox" checked /> Dictionary word checks (common words)</label>
+                  <label class="check"><input id="toggle-reuse" type="checkbox" checked /> Local reuse check (this device only)</label>
                 </div>
-              </div>
 
-              <div class="field">
-                <label>Checks</label>
-                <label class="check"><input id="toggle-patterns" type="checkbox" checked /> Pattern checks</label>
-                <label class="check"><input id="toggle-dictionary" type="checkbox" checked /> Dictionary word checks</label>
-                <label class="check"><input id="toggle-reuse" type="checkbox" checked /> Local reuse check</label>
-              </div>
+                <div class="field">
+                  <label for="wordlist">Custom wordlist (optional)</label>
+                  <input id="wordlist" type="file" accept=".txt" />
+                  <div class="hint">Add your own words (company name, product names, etc.) to flag passwords that include them.</div>
+                </div>
 
-              <div class="field">
-                <label for="wordlist">Custom wordlist (optional)</label>
-                <input id="wordlist" type="file" accept=".txt" />
-                <div class="hint">If provided, it’s used for on-device dictionary checks. Your file never leaves the browser.</div>
-              </div>
+                <div class="field">
+                  <label for="weights-json">Custom scoring weights (optional JSON)</label>
+                  <textarea id="weights-json" rows="4" spellcheck="false" placeholder='{"commonPasswordPenalty": 60, "sequencePenalty": 20}'></textarea>
+                  <div class="hint">Leave empty unless you know exactly what you want to tune.</div>
+                </div>
 
-              <div class="field">
-                <label for="weights-json">Custom scoring weights (optional JSON)</label>
-                <textarea id="weights-json" rows="4" spellcheck="false" placeholder='{"commonPasswordPenalty": 60, "sequencePenalty": 20}'></textarea>
-                <div class="hint">Leave empty to use the selected policy defaults.</div>
-              </div>
-            </details>
+                <div class="field">
+                  <label for="pepper">Local reuse check pepper (optional)</label>
+                  <div class="input-row">
+                    <input
+                      id="pepper"
+                      type="password"
+                      autocomplete="off"
+                      spellcheck="false"
+                      placeholder="Optional private phrase (not saved)"
+                    />
+                    <button id="toggle-pepper" class="btn btn-secondary" type="button">Show</button>
+                  </div>
+                  <div class="hint">Makes reuse detection more private by adding a secret only you know.</div>
+                </div>
 
-            <div class="field">
-              <label for="pepper">Local reuse check pepper (optional)</label>
-              <input id="pepper" type="password" autocomplete="off" spellcheck="false" />
-              <div class="hint">If set, the app can detect reuse on this device without storing your password.</div>
-            </div>
-
-            <div class="row">
-              <button id="analyze" class="btn" type="button">Analyze</button>
-              <button id="clear-history" class="btn btn-danger" type="button">Clear local history</button>
-              <button id="export-json" class="btn btn-secondary" type="button">Export JSON</button>
+                <div class="row">
+                  <button id="analyze-advanced" class="btn btn-secondary" type="button">Analyze with these settings</button>
+                </div>
+              </details>
             </div>
           </div>
 
-          <div class="card span-3 strength-results">
-            <h2>Results</h2>
-            <div class="metric">
-              <div class="metric__label">Score</div>
-              <div class="metric__value">
-                <span id="score">—</span><span class="muted">/100</span>
+          <div class="strength-side stack">
+            <div class="card">
+              <h2>Results</h2>
+              <div class="metric">
+                <div class="metric__label">Score</div>
+                <div class="metric__value">
+                  <span id="score">—</span><span class="muted">/100</span>
+                </div>
+                <div class="meter" aria-hidden="true">
+                  <div id="meter-fill" class="meter__fill"></div>
+                </div>
+                <div class="pill" id="label">—</div>
               </div>
-              <div class="meter" aria-hidden="true">
-                <div id="meter-fill" class="meter__fill"></div>
+
+              <div class="mini-grid">
+                <div class="mini">
+                  <div class="mini__k">Entropy</div>
+                  <div class="mini__v"><span id="entropy">—</span><span class="muted"> bits</span></div>
+                </div>
+                <div class="mini">
+                  <div class="mini__k">Shannon</div>
+                  <div class="mini__v"><span id="shannon">—</span><span class="muted"> bits</span></div>
+                </div>
+                <div class="mini">
+                  <div class="mini__k">Reuse</div>
+                  <div class="mini__v" id="reuse">—</div>
+                </div>
               </div>
-              <div class="pill" id="label">—</div>
             </div>
 
-            <div class="mini-grid">
-              <div class="mini">
-                <div class="mini__k">Entropy</div>
-                <div class="mini__v"><span id="entropy">—</span><span class="muted"> bits</span></div>
+            <div class="card">
+              <h2>What the tool noticed</h2>
+              <ul id="reasons" class="list"></ul>
+              <div class="note">
+                This is a practical scoring model. It’s not a proof of security but just a fast way to spot risky choices.
               </div>
-              <div class="mini">
-                <div class="mini__k">Shannon</div>
-                <div class="mini__v"><span id="shannon">—</span><span class="muted"> bits</span></div>
-              </div>
-              <div class="mini">
-                <div class="mini__k">Reuse</div>
-                <div class="mini__v" id="reuse">—</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card span-3 strength-reasons">
-            <h2>What the tool noticed</h2>
-            <ul id="reasons" class="list"></ul>
-            <div class="note">
-              This is a practical scoring model. It’s not a proof of security but just a fast way to spot risky choices.
             </div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">
-          Everything runs locally in your browser. No database, no tracking.
-        </div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
