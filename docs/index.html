@@ -13,18 +13,26 @@
           <div class="brand__title">Password Toolkit</div>
           <div class="brand__subtitle">Strength checks, generator, and offline crypto tools.</div>
         </div>
-        <nav class="tabs" aria-label="Tools">
-          <button class="tab is-active" data-tab="analyze" type="button">Strength</button>
-          <button class="tab" data-tab="generate" type="button">Generator</button>
-          <button class="tab" data-tab="crypto" type="button">Crypto</button>
+        <nav class="nav" aria-label="Tools">
+          <a class="navlink" href="./index.html" data-page="strength">Strength</a>
+          <a class="navlink" href="./generator.html" data-page="generator">Generator</a>
+          <a class="navlink" href="./hash.html" data-page="hash">Hash/HMAC</a>
+          <a class="navlink" href="./pbkdf2.html" data-page="pbkdf2">PBKDF2</a>
+          <a class="navlink" href="./aes-gcm.html" data-page="aes-gcm">AES-GCM</a>
+          <a class="navlink" href="./base64.html" data-page="base64">Base64</a>
         </nav>
       </div>
     </header>
 
     <main class="container">
-      <section class="panel is-active" id="panel-analyze" aria-label="Password strength analysis">
-        <div class="grid">
-          <div class="card">
+      <div class="page-head">
+        <h1 class="page-title">Password strength analysis</h1>
+        <div class="page-subtitle muted">Fast, explainable scoring with on-device checks and optional JSON export.</div>
+      </div>
+
+      <section aria-label="Password strength analysis">
+        <div class="grid grid-2">
+          <div class="card span-7">
             <h2>Check a password</h2>
             <div class="field">
               <label for="pwd">Password</label>
@@ -32,19 +40,29 @@
                 <input id="pwd" type="password" autocomplete="off" spellcheck="false" />
                 <button id="toggle-visibility" class="btn btn-secondary" type="button">Show</button>
               </div>
-              <div class="hint">Tip: use the generator tab if you need something strong quickly.</div>
+              <div class="hint">Tip: use the generator page if you need something strong quickly.</div>
             </div>
 
             <details class="details">
               <summary class="details__summary">Advanced analysis settings</summary>
 
-              <div class="field">
-                <label for="policy">Policy profile</label>
-                <select id="policy">
-                  <option value="balanced" selected>Balanced</option>
-                  <option value="nist">NIST-style</option>
-                  <option value="strict">Strict</option>
-                </select>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="policy">Policy profile</label>
+                  <select id="policy">
+                    <option value="balanced" selected>Balanced</option>
+                    <option value="nist">NIST-style</option>
+                    <option value="strict">Strict</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="dict-lang">Dictionary language</label>
+                  <select id="dict-lang">
+                    <option value="en" selected>English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                  </select>
+                </div>
               </div>
 
               <div class="field">
@@ -108,159 +126,12 @@
             </div>
           </div>
 
-          <div class="card">
+          <div class="card span-5">
             <h2>What the tool noticed</h2>
             <ul id="reasons" class="list"></ul>
             <div class="note">
-              This is a practical scoring model. It’s not a proof of security—just a fast way to spot risky choices.
+              This is a practical scoring model. It’s not a proof of security but just a fast way to spot risky choices.
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="panel-generate" aria-label="Password generator">
-        <div class="grid">
-          <div class="card">
-            <h2>Generate a strong password</h2>
-            <div class="form-grid">
-              <div class="field">
-                <label for="gen-length">Length</label>
-                <input id="gen-length" type="number" min="8" max="128" value="20" />
-              </div>
-              <div class="field">
-                <label><input id="gen-lower" type="checkbox" checked /> Lowercase</label>
-                <label><input id="gen-upper" type="checkbox" checked /> Uppercase</label>
-                <label><input id="gen-digits" type="checkbox" checked /> Digits</label>
-                <label><input id="gen-symbols" type="checkbox" checked /> Symbols</label>
-                <label><input id="gen-avoid-ambiguous" type="checkbox" checked /> Avoid ambiguous</label>
-                <label><input id="gen-require-each" type="checkbox" checked /> Require each selected set</label>
-              </div>
-            </div>
-            <div class="row">
-              <button id="generate" class="btn" type="button">Generate</button>
-              <button id="copy-generated" class="btn btn-secondary" type="button">Copy</button>
-            </div>
-            <div class="output" id="generated" aria-live="polite">—</div>
-          </div>
-
-          <div class="card">
-            <h2>Quick check</h2>
-            <div class="hint">Run the strength checker on the generated password without putting it in your clipboard.</div>
-            <button id="analyze-generated" class="btn btn-secondary" type="button">Analyze generated password</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="panel-crypto" aria-label="Crypto tools">
-        <div class="grid">
-          <div class="card">
-            <h2>Hash / HMAC</h2>
-            <div class="field">
-              <label for="crypto-text">Text</label>
-              <textarea id="crypto-text" rows="5" spellcheck="false"></textarea>
-            </div>
-            <div class="form-grid">
-              <div class="field">
-                <label for="hash-algo">Hash algorithm</label>
-                <select id="hash-algo">
-                  <option value="SHA-256" selected>SHA-256</option>
-                  <option value="SHA-384">SHA-384</option>
-                  <option value="SHA-512">SHA-512</option>
-                  <option value="SHA-1">SHA-1</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="hash-format">Output</label>
-                <select id="hash-format">
-                  <option value="hex" selected>Hex</option>
-                  <option value="base64">Base64</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label for="hmac-key">HMAC key (optional)</label>
-              <input id="hmac-key" type="password" autocomplete="off" spellcheck="false" />
-            </div>
-            <div class="row">
-              <button id="do-hash" class="btn" type="button">Compute</button>
-              <button id="copy-hash" class="btn btn-secondary" type="button">Copy</button>
-            </div>
-            <div class="output" id="hash-out">—</div>
-
-            <div class="field">
-              <label for="hash-expected">Expected output (optional)</label>
-              <input id="hash-expected" type="text" spellcheck="false" />
-              <div class="hint">This verifies whether the computed value matches what you expect.</div>
-            </div>
-            <div class="pill" id="hash-match">—</div>
-          </div>
-
-          <div class="card">
-            <h2>PBKDF2</h2>
-            <div class="field">
-              <label for="kdf-password">Password</label>
-              <input id="kdf-password" type="password" autocomplete="off" spellcheck="false" />
-            </div>
-            <div class="form-grid">
-              <div class="field">
-                <label for="kdf-salt">Salt</label>
-                <input id="kdf-salt" type="text" spellcheck="false" value="salt" />
-              </div>
-              <div class="field">
-                <label for="kdf-iter">Iterations</label>
-                <input id="kdf-iter" type="number" min="1000" max="2000000" value="200000" />
-              </div>
-              <div class="field">
-                <label for="kdf-len">Key length (bytes)</label>
-                <input id="kdf-len" type="number" min="16" max="64" value="32" />
-              </div>
-            </div>
-            <div class="row">
-              <button id="do-kdf" class="btn" type="button">Derive key</button>
-              <button id="copy-kdf" class="btn btn-secondary" type="button">Copy</button>
-            </div>
-            <div class="output" id="kdf-out">—</div>
-          </div>
-
-          <div class="card">
-            <h2>AES-GCM encrypt / decrypt</h2>
-            <div class="field">
-              <label for="aes-key">Key (text)</label>
-              <input id="aes-key" type="password" autocomplete="off" spellcheck="false" />
-            </div>
-            <div class="field">
-              <label for="aes-plain">Plaintext</label>
-              <textarea id="aes-plain" rows="4" spellcheck="false"></textarea>
-            </div>
-            <div class="row">
-              <button id="do-encrypt" class="btn" type="button">Encrypt</button>
-              <button id="copy-cipher" class="btn btn-secondary" type="button">Copy</button>
-            </div>
-            <div class="output" id="aes-cipher">—</div>
-
-            <div class="divider"></div>
-
-            <div class="field">
-              <label for="aes-input">Ciphertext (Base64)</label>
-              <textarea id="aes-input" rows="4" spellcheck="false"></textarea>
-            </div>
-            <div class="row">
-              <button id="do-decrypt" class="btn btn-secondary" type="button">Decrypt</button>
-            </div>
-            <div class="output" id="aes-plain-out">—</div>
-          </div>
-
-          <div class="card">
-            <h2>Base64</h2>
-            <div class="field">
-              <label for="b64-in">Text</label>
-              <textarea id="b64-in" rows="4" spellcheck="false"></textarea>
-            </div>
-            <div class="row">
-              <button id="b64-encode" class="btn" type="button">Encode</button>
-              <button id="b64-decode" class="btn btn-secondary" type="button">Decode</button>
-            </div>
-            <div class="output" id="b64-out">—</div>
           </div>
         </div>
       </section>

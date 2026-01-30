@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Password Toolkit — Generator</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <div class="brand__title">Password Toolkit</div>
+          <div class="brand__subtitle">Strength checks, generator, and offline crypto tools.</div>
+        </div>
+        <nav class="nav" aria-label="Tools">
+          <a class="navlink" href="./index.html" data-page="strength">Strength</a>
+          <a class="navlink" href="./generator.html" data-page="generator">Generator</a>
+          <a class="navlink" href="./hash.html" data-page="hash">Hash/HMAC</a>
+          <a class="navlink" href="./pbkdf2.html" data-page="pbkdf2">PBKDF2</a>
+          <a class="navlink" href="./aes-gcm.html" data-page="aes-gcm">AES-GCM</a>
+          <a class="navlink" href="./base64.html" data-page="base64">Base64</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="page-head">
+        <h1 class="page-title">Password generator</h1>
+        <div class="page-subtitle muted">Generate a strong password locally, then optionally run the strength analyzer.</div>
+      </div>
+
+      <section aria-label="Password generator">
+        <div class="grid grid-2">
+          <div class="card span-7">
+            <h2>Generate a strong password</h2>
+            <div class="form-grid">
+              <div class="field">
+                <label for="gen-length">Length</label>
+                <input id="gen-length" type="number" min="8" max="128" value="20" />
+              </div>
+              <div class="field">
+                <label><input id="gen-lower" type="checkbox" checked /> Lowercase</label>
+                <label><input id="gen-upper" type="checkbox" checked /> Uppercase</label>
+                <label><input id="gen-digits" type="checkbox" checked /> Digits</label>
+                <label><input id="gen-symbols" type="checkbox" checked /> Symbols</label>
+                <label><input id="gen-avoid-ambiguous" type="checkbox" checked /> Avoid ambiguous</label>
+                <label><input id="gen-require-each" type="checkbox" checked /> Require each selected set</label>
+              </div>
+            </div>
+            <div class="row">
+              <button id="generate" class="btn" type="button">Generate</button>
+              <button id="copy-generated" class="btn btn-secondary" type="button">Copy</button>
+            </div>
+            <div class="output" id="generated" aria-live="polite">—</div>
+          </div>
+
+          <div class="card span-5">
+            <h2>Quick check</h2>
+            <div class="hint">Run the strength checker on the generated password without putting it in your clipboard.</div>
+            <button id="analyze-generated" class="btn btn-secondary" type="button">Analyze generated password</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </footer>
+    </main>
+
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>

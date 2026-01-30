@@ -16,13 +16,8 @@ function $(id) {
   return el;
 }
 
-function setActiveTab(name) {
-  for (const b of document.querySelectorAll(".tab")) {
-    b.classList.toggle("is-active", b.dataset.tab === name);
-  }
-  for (const p of document.querySelectorAll(".panel")) {
-    p.classList.toggle("is-active", p.id === `panel-${name}`);
-  }
+function $maybe(id) {
+  return document.getElementById(id);
 }
 
 function setText(id, value) {
@@ -59,6 +54,7 @@ async function copyToClipboard(text) {
 
 let commonSet = null;
 let wordSet = null;
+let customWordSet = new Set();
 let lastGenerated = "";
 let lastAnalysis = null;
 
@@ -95,6 +91,12 @@ async function loadUploadedWordlist(file) {
     set.add(w);
   }
   return set;
+}
+
+function mergedWordSet(base, custom) {
+  const merged = new Set(base ?? []);
+  for (const w of custom ?? []) merged.add(w);
+  return merged;
 }
 
 function parseWeightsJson(text) {
@@ -138,13 +140,17 @@ async function runAnalysis(password, options) {
   renderReasons(analysis.reasons);
 }
 
-function handleTabs() {
-  for (const b of document.querySelectorAll(".tab")) {
-    b.addEventListener("click", () => setActiveTab(String(b.dataset.tab)));
+function handleNav() {
+  const path = window.location.pathname.split("/").pop() || "index.html";
+  for (const a of document.querySelectorAll(".navlink")) {
+    const href = a.getAttribute("href") ?? "";
+    const page = href.split("/").pop();
+    a.classList.toggle("is-active", page === path);
   }
 }
 
 function handleStrength() {
+  if (!$maybe("pwd")) return;
   const pwd = $("pwd");
   const pepper = $("pepper");
 
@@ -153,14 +159,27 @@ function handleStrength() {
     const file = input.files && input.files.length > 0 ? input.files[0] : null;
     if (!file) return;
     try {
-      const custom = await loadUploadedWordlist(file);
-      const merged = new Set(wordSet ?? []);
-      for (const w of custom) merged.add(w);
-      wordSet = merged;
+      customWordSet = await loadUploadedWordlist(file);
+      wordSet = mergedWordSet(wordSet, customWordSet);
     } catch (e) {
       renderReasons([String(e?.message ?? e)]);
     }
   });
+
+  const dictLang = $maybe("dict-lang");
+  if (dictLang) {
+    dictLang.addEventListener("change", async () => {
+      const lang = String(dictLang.value || "en");
+      const url = lang === "es" ? "assets/words_es.txt" : lang === "fr" ? "assets/words_fr.txt" : "assets/words_en.txt";
+      try {
+        const base = await loadWords(url);
+        wordSet = mergedWordSet(base, customWordSet);
+      } catch (e) {
+        wordSet = mergedWordSet(new Set(), customWordSet);
+        renderReasons([String(e?.message ?? e)]);
+      }
+    });
+  }
 
   $("toggle-visibility").addEventListener("click", () => {
     const visible = pwd.type === "text";
@@ -202,9 +221,17 @@ function handleStrength() {
     a.remove();
     URL.revokeObjectURL(url);
   });
+
+  const pending = sessionStorage.getItem("psc_analyze_password");
+  if (pending) {
+    sessionStorage.removeItem("psc_analyze_password");
+    pwd.value = pending;
+    runAnalysis(pending, { pepper: pepper.value }).catch(() => undefined);
+  }
 }
 
 function handleGenerator() {
+  if (!$maybe("gen-length")) return;
   $("generate").addEventListener("click", () => {
     const opts = {
       length: Number($("gen-length").value),
@@ -229,13 +256,13 @@ function handleGenerator() {
 
   $("analyze-generated").addEventListener("click", async () => {
     if (!lastGenerated) return;
-    setActiveTab("analyze");
-    $("pwd").value = lastGenerated;
-    await runAnalysis(lastGenerated, { pepper: $("pepper").value });
+    sessionStorage.setItem("psc_analyze_password", lastGenerated);
+    window.location.href = "./index.html";
   });
 }
 
-function handleCrypto() {
+function handleHashPage() {
+  if (!$maybe("do-hash")) return;
   $("do-hash").addEventListener("click", async () => {
     const text = $("crypto-text").value;
     const algo = $("hash-algo").value;
@@ -264,7 +291,10 @@ function handleCrypto() {
   $("copy-hash").addEventListener("click", async () => {
     await copyToClipboard($("hash-out").textContent ?? "");
   });
+}
 
+function handlePbkdf2Page() {
+  if (!$maybe("do-kdf")) return;
   $("do-kdf").addEventListener("click", async () => {
     const pw = $("kdf-password").value;
     const salt = $("kdf-salt").value;
@@ -282,7 +312,10 @@ function handleCrypto() {
   $("copy-kdf").addEventListener("click", async () => {
     await copyToClipboard($("kdf-out").textContent ?? "");
   });
+}
 
+function handleAesGcmPage() {
+  if (!$maybe("do-encrypt")) return;
   $("do-encrypt").addEventListener("click", async () => {
     try {
       const out = await aesGcmEncrypt($("aes-key").value, $("aes-plain").value);
@@ -305,7 +338,10 @@ function handleCrypto() {
       setOutput("aes-plain-out", String(e?.message ?? e));
     }
   });
+}
 
+function handleBase64Page() {
+  if (!$maybe("b64-encode")) return;
   $("b64-encode").addEventListener("click", () => {
     try {
       setOutput("b64-out", base64EncodeText($("b64-in").value));
@@ -324,10 +360,13 @@ function handleCrypto() {
 }
 
 async function init() {
-  handleTabs();
+  handleNav();
   handleStrength();
   handleGenerator();
-  handleCrypto();
+  handleHashPage();
+  handlePbkdf2Page();
+  handleAesGcmPage();
+  handleBase64Page();
 
   try {
     commonSet = await loadCommonPasswords("assets/common_passwords.txt");

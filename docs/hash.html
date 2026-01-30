@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Password Toolkit — Hash/HMAC</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <div class="brand__title">Password Toolkit</div>
+          <div class="brand__subtitle">Strength checks, generator, and offline crypto tools.</div>
+        </div>
+        <nav class="nav" aria-label="Tools">
+          <a class="navlink" href="./index.html" data-page="strength">Strength</a>
+          <a class="navlink" href="./generator.html" data-page="generator">Generator</a>
+          <a class="navlink" href="./hash.html" data-page="hash">Hash/HMAC</a>
+          <a class="navlink" href="./pbkdf2.html" data-page="pbkdf2">PBKDF2</a>
+          <a class="navlink" href="./aes-gcm.html" data-page="aes-gcm">AES-GCM</a>
+          <a class="navlink" href="./base64.html" data-page="base64">Base64</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="page-head">
+        <h1 class="page-title">Hash / HMAC</h1>
+        <div class="page-subtitle muted">Compute digests and optional HMAC locally in your browser. No network calls.</div>
+      </div>
+
+      <section aria-label="Hash and HMAC">
+        <div class="grid grid-1">
+          <div class="card span-8">
+            <h2>Compute</h2>
+            <div class="field">
+              <label for="crypto-text">Text</label>
+              <textarea id="crypto-text" rows="6" spellcheck="false"></textarea>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="hash-algo">Hash algorithm</label>
+                <select id="hash-algo">
+                  <option value="SHA-256" selected>SHA-256</option>
+                  <option value="SHA-384">SHA-384</option>
+                  <option value="SHA-512">SHA-512</option>
+                  <option value="SHA-1">SHA-1</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="hash-format">Output</label>
+                <select id="hash-format">
+                  <option value="hex" selected>Hex</option>
+                  <option value="base64">Base64</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="hmac-key">HMAC key (optional)</label>
+              <input id="hmac-key" type="password" autocomplete="off" spellcheck="false" />
+              <div class="hint">If set, the tool computes an HMAC instead of a plain digest.</div>
+            </div>
+            <div class="row">
+              <button id="do-hash" class="btn" type="button">Compute</button>
+              <button id="copy-hash" class="btn btn-secondary" type="button">Copy</button>
+            </div>
+            <div class="output" id="hash-out">—</div>
+
+            <div class="field">
+              <label for="hash-expected">Expected output (optional)</label>
+              <input id="hash-expected" type="text" spellcheck="false" />
+              <div class="hint">This verifies whether the computed value matches what you expect.</div>
+            </div>
+            <div class="pill" id="hash-match">—</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </footer>
+    </main>
+
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>

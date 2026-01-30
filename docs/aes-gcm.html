@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Password Toolkit — AES-GCM</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <div class="brand__title">Password Toolkit</div>
+          <div class="brand__subtitle">Strength checks, generator, and offline crypto tools.</div>
+        </div>
+        <nav class="nav" aria-label="Tools">
+          <a class="navlink" href="./index.html" data-page="strength">Strength</a>
+          <a class="navlink" href="./generator.html" data-page="generator">Generator</a>
+          <a class="navlink" href="./hash.html" data-page="hash">Hash/HMAC</a>
+          <a class="navlink" href="./pbkdf2.html" data-page="pbkdf2">PBKDF2</a>
+          <a class="navlink" href="./aes-gcm.html" data-page="aes-gcm">AES-GCM</a>
+          <a class="navlink" href="./base64.html" data-page="base64">Base64</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="page-head">
+        <h1 class="page-title">AES-GCM encrypt / decrypt</h1>
+        <div class="page-subtitle muted">Encrypt and decrypt locally. Output is Base64 (IV + ciphertext).</div>
+      </div>
+
+      <section aria-label="AES-GCM">
+        <div class="grid grid-1">
+          <div class="card span-10">
+            <h2>Encrypt</h2>
+            <div class="field">
+              <label for="aes-key">Key (text)</label>
+              <input id="aes-key" type="password" autocomplete="off" spellcheck="false" />
+              <div class="hint">The app hashes this key to derive a 256-bit AES key.</div>
+            </div>
+            <div class="field">
+              <label for="aes-plain">Plaintext</label>
+              <textarea id="aes-plain" rows="5" spellcheck="false"></textarea>
+            </div>
+            <div class="row">
+              <button id="do-encrypt" class="btn" type="button">Encrypt</button>
+              <button id="copy-cipher" class="btn btn-secondary" type="button">Copy</button>
+            </div>
+            <div class="output" id="aes-cipher">—</div>
+
+            <div class="divider"></div>
+
+            <h2>Decrypt</h2>
+            <div class="field">
+              <label for="aes-input">Ciphertext (Base64)</label>
+              <textarea id="aes-input" rows="5" spellcheck="false"></textarea>
+            </div>
+            <div class="row">
+              <button id="do-decrypt" class="btn btn-secondary" type="button">Decrypt</button>
+            </div>
+            <div class="output" id="aes-plain-out">—</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </footer>
+    </main>
+
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>
