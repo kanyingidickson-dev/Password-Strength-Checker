@@ -1,0 +1,8 @@
+{
+  "name": "password-strength-checker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:web": "node --test web_tests"
+  }
+}
