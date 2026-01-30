@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">Base64 encode / decode</h1>
@@ -31,12 +37,13 @@
       </div>
 
       <section aria-label="Base64">
-        <div class="grid grid-2">
-          <div class="card span-7">
+        <div class="grid crypto-grid">
+          <div class="card">
             <h2>Input</h2>
             <div class="field">
               <label for="b64-in">Text</label>
-              <textarea id="b64-in" rows="6" spellcheck="false"></textarea>
+              <textarea id="b64-in" rows="3" spellcheck="false" placeholder="Type or paste text to encode/decode"></textarea>
+              <div class="hint">Base64 is not encryption. It’s just a text-friendly encoding.</div>
             </div>
             <div class="row">
               <button id="b64-encode" class="btn" type="button">Encode</button>
@@ -44,16 +51,15 @@
             </div>
           </div>
 
-          <div class="card span-5">
+          <div class="card">
             <h2>Output</h2>
-            <div class="output" id="b64-out">—</div>
+            <div class="row">
+              <button id="copy-b64" class="btn btn-secondary" type="button">Copy</button>
+            </div>
+            <div class="output is-empty" id="b64-out">—</div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
