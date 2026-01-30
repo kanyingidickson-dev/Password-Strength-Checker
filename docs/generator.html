@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">Password generator</h1>
@@ -31,13 +37,14 @@
       </div>
 
       <section aria-label="Password generator">
-        <div class="grid grid-2">
-          <div class="card span-5">
+        <div class="grid generator-grid">
+          <div class="card">
             <h2>Options</h2>
             <div class="form-grid">
               <div class="field">
                 <label for="gen-length">Length</label>
                 <input id="gen-length" type="number" min="8" max="128" value="20" />
+                <div class="hint">Tip: 16–24 characters is a strong default for most accounts.</div>
               </div>
               <div class="field">
                 <label class="check"><input id="gen-lower" type="checkbox" checked /> Lowercase</label>
@@ -46,6 +53,7 @@
                 <label class="check"><input id="gen-symbols" type="checkbox" checked /> Symbols</label>
                 <label class="check"><input id="gen-avoid-ambiguous" type="checkbox" checked /> Avoid ambiguous</label>
                 <label class="check"><input id="gen-require-each" type="checkbox" checked /> Require each selected set</label>
+                <div class="hint">Avoid ambiguous removes characters like O/0 and l/1 that are easy to misread.</div>
               </div>
             </div>
             <div class="row">
@@ -53,25 +61,24 @@
             </div>
           </div>
 
-          <div class="card span-4">
-            <h2>Generated password</h2>
-            <div class="row">
-              <button id="copy-generated" class="btn btn-secondary" type="button">Copy</button>
+          <div class="stack">
+            <div class="card">
+              <h2>Generated password</h2>
+              <div class="row">
+                <button id="copy-generated" class="btn btn-secondary" type="button">Copy</button>
+              </div>
+              <div class="output is-empty" id="generated" aria-live="polite">—</div>
+              <div class="hint">Generate first, then copy. (Copied button will confirm when it worked.)</div>
             </div>
-            <div class="output" id="generated" aria-live="polite">—</div>
-          </div>
 
-          <div class="card span-3">
-            <h2>Quick check</h2>
-            <div class="hint">Run the strength checker on the generated password without putting it in your clipboard.</div>
-            <button id="analyze-generated" class="btn btn-secondary" type="button">Analyze generated password</button>
+            <div class="card">
+              <h2>Quick check</h2>
+              <div class="hint">Run the strength checker on the generated password without putting it in your clipboard.</div>
+              <button id="analyze-generated" class="btn btn-secondary" type="button">Analyze generated password</button>
+            </div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
