@@ -36,6 +36,16 @@ python -m pip install -r requirements.txt
 python3 -m src.cli --password "CorrectHorseBatteryStaple"
 ```
 
+Installable CLI entry point:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip install -e .
+password-strength-checker --password "CorrectHorseBatteryStaple"
+```
+
 Interactive (recommended to avoid shell history):
 
 ```bash
@@ -56,6 +66,12 @@ Optional breach check (makes an external network request):
 
 ```bash
 python3 -m src.cli --password "password123" --check-breach
+```
+
+JSON output (useful for automation and CI):
+
+```bash
+password-strength-checker --password "CorrectHorseBatteryStaple" --json
 ```
 
 ## Development
@@ -94,6 +110,15 @@ It includes:
 - Strong password generator
 - Offline crypto utilities (hash/HMAC with optional verification, PBKDF2, AES-GCM, Base64)
 
+The web UI uses a top navigation bar with dedicated pages:
+
+- `docs/index.html` (Strength)
+- `docs/generator.html`
+- `docs/hash.html`
+- `docs/pbkdf2.html`
+- `docs/aes-gcm.html`
+- `docs/base64.html`
+
 Enable GitHub Pages:
 
 - **Source**: `Deploy from a branch`
@@ -124,13 +149,13 @@ The CLI prints:
 - Rules are implemented as small functions returning both a score delta and human-readable reasons.
 - Entropy is treated as a *signal*, not a guarantee; pattern checks reduce the score even when entropy looks high.
 
-## Future improvements
+## Implemented improvements
 
 - Better keyboard-walk detection (full adjacency graph)
-- Language-specific word detection
+- Language-specific word detection (web)
 - Configurable policy profiles (NIST-like vs strict)
-- More robust entropy models
-- Configurable scoring weights and rule toggles
-- Optional JSON output for automation and CI usage
+- More robust entropy models (Shannon entropy signal)
+- Configurable scoring weights and rule toggles (web)
+- Optional JSON output for automation and CI usage (CLI + web export)
 - Packaging polish (installable CLI entry point)
-- Expanded test suite (property-based tests, fuzzing)
+- Expanded test suite (includes fuzz/property-style tests)
