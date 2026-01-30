@@ -31,9 +31,9 @@
       </div>
 
       <section aria-label="PBKDF2">
-        <div class="grid grid-1">
-          <div class="card span-8">
-            <h2>Derive key</h2>
+        <div class="grid grid-2">
+          <div class="card span-7">
+            <h2>Parameters</h2>
             <div class="field">
               <label for="kdf-password">Password</label>
               <input id="kdf-password" type="password" autocomplete="off" spellcheck="false" />
@@ -54,6 +54,12 @@
             </div>
             <div class="row">
               <button id="do-kdf" class="btn" type="button">Derive key</button>
+            </div>
+          </div>
+
+          <div class="card span-5">
+            <h2>Derived key</h2>
+            <div class="row">
               <button id="copy-kdf" class="btn btn-secondary" type="button">Copy</button>
             </div>
             <div class="output" id="kdf-out">—</div>

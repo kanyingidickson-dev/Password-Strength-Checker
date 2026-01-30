@@ -32,8 +32,8 @@
 
       <section aria-label="Password generator">
         <div class="grid grid-2">
-          <div class="card span-7">
-            <h2>Generate a strong password</h2>
+          <div class="card span-5">
+            <h2>Options</h2>
             <div class="form-grid">
               <div class="field">
                 <label for="gen-length">Length</label>
@@ -50,12 +50,18 @@
             </div>
             <div class="row">
               <button id="generate" class="btn" type="button">Generate</button>
+            </div>
+          </div>
+
+          <div class="card span-4">
+            <h2>Generated password</h2>
+            <div class="row">
               <button id="copy-generated" class="btn btn-secondary" type="button">Copy</button>
             </div>
             <div class="output" id="generated" aria-live="polite">—</div>
           </div>
 
-          <div class="card span-5">
+          <div class="card span-3">
             <h2>Quick check</h2>
             <div class="hint">Run the strength checker on the generated password without putting it in your clipboard.</div>
             <button id="analyze-generated" class="btn btn-secondary" type="button">Analyze generated password</button>

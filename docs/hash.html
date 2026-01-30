@@ -31,9 +31,9 @@
       </div>
 
       <section aria-label="Hash and HMAC">
-        <div class="grid grid-1">
-          <div class="card span-8">
-            <h2>Compute</h2>
+        <div class="grid grid-2">
+          <div class="card span-7">
+            <h2>Inputs</h2>
             <div class="field">
               <label for="crypto-text">Text</label>
               <textarea id="crypto-text" rows="6" spellcheck="false"></textarea>
@@ -63,10 +63,15 @@
             </div>
             <div class="row">
               <button id="do-hash" class="btn" type="button">Compute</button>
+            </div>
+          </div>
+
+          <div class="card span-5">
+            <h2>Output</h2>
+            <div class="row">
               <button id="copy-hash" class="btn btn-secondary" type="button">Copy</button>
             </div>
             <div class="output" id="hash-out">—</div>
-
             <div class="field">
               <label for="hash-expected">Expected output (optional)</label>
               <input id="hash-expected" type="text" spellcheck="false" />

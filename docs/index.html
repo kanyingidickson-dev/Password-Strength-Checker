@@ -32,7 +32,7 @@
 
       <section aria-label="Password strength analysis">
         <div class="grid grid-2">
-          <div class="card span-7">
+          <div class="card span-6">
             <h2>Check a password</h2>
             <div class="field">
               <label for="pwd">Password</label>
@@ -96,9 +96,10 @@
               <button id="clear-history" class="btn btn-secondary" type="button">Clear local history</button>
               <button id="export-json" class="btn btn-secondary" type="button">Export JSON</button>
             </div>
+          </div>
 
-            <div class="divider"></div>
-
+          <div class="card span-3">
+            <h2>Results</h2>
             <div class="metric">
               <div class="metric__label">Score</div>
               <div class="metric__value">
@@ -126,7 +127,7 @@
             </div>
           </div>
 
-          <div class="card span-5">
+          <div class="card span-3">
             <h2>What the tool noticed</h2>
             <ul id="reasons" class="list"></ul>
             <div class="note">
