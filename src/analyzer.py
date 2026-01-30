@@ -91,7 +91,9 @@ def analyze_password(
     breach_count: int | None = None
     if check_breach:
         breach_count = check_pwned_password_k_anonymity(password)
-        if breach_count > 0:
+        if breach_count is None:
+            reasons.append("Breach check unavailable (network error)")
+        elif breach_count > 0:
             reasons.append(f"Found in breach corpus ({breach_count} occurrences)")
             score -= 50
         else:

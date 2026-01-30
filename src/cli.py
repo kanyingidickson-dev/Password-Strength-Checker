@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import os
 from pathlib import Path
 
@@ -9,10 +10,14 @@ from src.analyzer import analyze_password
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Password Strength Checker")
-    parser.add_argument("--password", required=True, help="Password to analyze")
+    parser.add_argument("--password", help="Password to analyze")
     parser.add_argument("--check-breach", action="store_true", help="Use HIBP k-anonymity API")
     parser.add_argument("--save-history", action="store_true", help="Save digest to local history")
     args = parser.parse_args()
+
+    password = args.password
+    if password is None:
+        password = getpass.getpass("Password: ")
 
     history_path = Path(os.getenv("PASSWORD_HISTORY_PATH", "data/history.json"))
     pepper = os.getenv("PASSWORD_HISTORY_PEPPER")
@@ -25,7 +30,7 @@ def main() -> int:
     common_passwords_path = Path("data/common_passwords.txt")
 
     analysis = analyze_password(
-        args.password,
+        password,
         common_passwords_path=common_passwords_path,
         history_path=history_path,
         history_pepper=pepper,
