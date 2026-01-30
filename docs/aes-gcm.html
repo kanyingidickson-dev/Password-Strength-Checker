@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">AES-GCM encrypt / decrypt</h1>
@@ -31,43 +37,44 @@
       </div>
 
       <section aria-label="AES-GCM">
-        <div class="grid grid-2">
-          <div class="card span-6">
+        <div class="grid crypto-grid">
+          <div class="card">
             <h2>Encrypt</h2>
             <div class="field">
               <label for="aes-key">Key (text)</label>
-              <input id="aes-key" type="password" autocomplete="off" spellcheck="false" />
+              <div class="input-row">
+                <input id="aes-key" type="password" autocomplete="off" spellcheck="false" placeholder="Enter a secret key / passphrase" />
+                <button id="toggle-aes-key" class="btn btn-secondary" type="button">Show</button>
+              </div>
               <div class="hint">The app hashes this key to derive a 256-bit AES key.</div>
             </div>
             <div class="field">
               <label for="aes-plain">Plaintext</label>
-              <textarea id="aes-plain" rows="5" spellcheck="false"></textarea>
+              <textarea id="aes-plain" rows="3" spellcheck="false" placeholder="Type or paste the message you want to encrypt"></textarea>
+              <div class="hint">Tip: anyone with the same key can decrypt. Don’t share the key in the same channel as the ciphertext.</div>
             </div>
             <div class="row">
               <button id="do-encrypt" class="btn" type="button">Encrypt</button>
               <button id="copy-cipher" class="btn btn-secondary" type="button">Copy</button>
             </div>
-            <div class="output" id="aes-cipher">—</div>
+            <div class="output is-empty" id="aes-cipher">—</div>
 
           </div>
 
-          <div class="card span-6">
+          <div class="card">
             <h2>Decrypt</h2>
             <div class="field">
               <label for="aes-input">Ciphertext (Base64)</label>
-              <textarea id="aes-input" rows="5" spellcheck="false"></textarea>
+              <textarea id="aes-input" rows="3" spellcheck="false" placeholder="Paste Base64 ciphertext (IV + ciphertext)"></textarea>
+              <div class="hint">If decryption fails, the key is wrong or the ciphertext was modified.</div>
             </div>
             <div class="row">
               <button id="do-decrypt" class="btn btn-secondary" type="button">Decrypt</button>
             </div>
-            <div class="output" id="aes-plain-out">—</div>
+            <div class="output is-empty" id="aes-plain-out">—</div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
