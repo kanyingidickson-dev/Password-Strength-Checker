@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import getpass
+import json
 import os
 from pathlib import Path
 
@@ -13,6 +14,7 @@ def main() -> int:
     parser.add_argument("--password", help="Password to analyze")
     parser.add_argument("--check-breach", action="store_true", help="Use HIBP k-anonymity API")
     parser.add_argument("--save-history", action="store_true", help="Save digest to local history")
+    parser.add_argument("--json", action="store_true", help="Print analysis JSON (for automation)")
     args = parser.parse_args()
 
     password = args.password
@@ -38,9 +40,23 @@ def main() -> int:
         save_history=args.save_history,
     )
 
+    if args.json:
+        payload = {
+            "score": analysis.score,
+            "label": analysis.label,
+            "entropy_bits": analysis.entropy_bits,
+            "shannon_entropy_bits": analysis.shannon_entropy_bits,
+            "is_reused": analysis.is_reused,
+            "breach_count": analysis.breach_count,
+            "reasons": analysis.reasons,
+        }
+        print(json.dumps(payload, indent=2) + "\n")
+        return 0
+
     print(f"score: {analysis.score}/100")
     print(f"label: {analysis.label}")
     print(f"entropy_bits: {analysis.entropy_bits:.1f}")
+    print(f"shannon_entropy_bits: {analysis.shannon_entropy_bits:.1f}")
     if analysis.breach_count is not None:
         print(f"breach_count: {analysis.breach_count}")
     print("reasons:")
@@ -48,6 +64,10 @@ def main() -> int:
         print(f"- {r}")
 
     return 0
+
+
+def cli() -> None:
+    raise SystemExit(main())
 
 
 if __name__ == "__main__":
