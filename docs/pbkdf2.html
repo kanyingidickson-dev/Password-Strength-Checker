@@ -24,6 +24,12 @@
       </div>
     </header>
 
+    <div class="topnote">
+      <div class="container">
+        <div class="topnote__text muted">Everything runs locally in your browser. No database, no tracking.</div>
+      </div>
+    </div>
+
     <main class="container">
       <div class="page-head">
         <h1 class="page-title">PBKDF2 key derivation</h1>
@@ -31,25 +37,32 @@
       </div>
 
       <section aria-label="PBKDF2">
-        <div class="grid grid-2">
-          <div class="card span-7">
+        <div class="grid crypto-grid">
+          <div class="card">
             <h2>Parameters</h2>
             <div class="field">
               <label for="kdf-password">Password</label>
-              <input id="kdf-password" type="password" autocomplete="off" spellcheck="false" />
+              <div class="input-row">
+                <input id="kdf-password" type="password" autocomplete="off" spellcheck="false" placeholder="Enter a password / passphrase" />
+                <button id="toggle-kdf-password" class="btn btn-secondary" type="button">Show</button>
+              </div>
+              <div class="hint">PBKDF2 turns a password into a cryptographic key by doing many rounds of hashing.</div>
             </div>
             <div class="form-grid">
               <div class="field">
                 <label for="kdf-salt">Salt</label>
-                <input id="kdf-salt" type="text" spellcheck="false" value="salt" />
+                <input id="kdf-salt" type="text" spellcheck="false" value="salt" placeholder="Unique random salt (recommended)" />
+                <div class="hint">Salt should be unique per password. It prevents rainbow-table attacks.</div>
               </div>
               <div class="field">
                 <label for="kdf-iter">Iterations</label>
                 <input id="kdf-iter" type="number" min="1000" max="2000000" value="200000" />
+                <div class="hint">Higher is slower but harder to brute-force. 200k is a reasonable starting point.</div>
               </div>
               <div class="field">
                 <label for="kdf-len">Key length (bytes)</label>
                 <input id="kdf-len" type="number" min="16" max="64" value="32" />
+                <div class="hint">32 bytes = 256-bit key (common for AES-256).</div>
               </div>
             </div>
             <div class="row">
@@ -57,19 +70,15 @@
             </div>
           </div>
 
-          <div class="card span-5">
+          <div class="card">
             <h2>Derived key</h2>
             <div class="row">
               <button id="copy-kdf" class="btn btn-secondary" type="button">Copy</button>
             </div>
-            <div class="output" id="kdf-out">—</div>
+            <div class="output is-empty" id="kdf-out">—</div>
           </div>
         </div>
       </section>
-
-      <footer class="footer">
-        <div class="muted">Everything runs locally in your browser. No database, no tracking.</div>
-      </footer>
     </main>
 
     <script type="module" src="assets/app.js"></script>
