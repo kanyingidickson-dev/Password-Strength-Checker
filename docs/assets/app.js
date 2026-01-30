@@ -40,10 +40,47 @@ function setMeter(score) {
 function renderReasons(items) {
   const ul = $("reasons");
   ul.replaceChildren();
-  for (const r of items) {
-    const li = document.createElement("li");
-    li.textContent = r;
-    ul.appendChild(li);
+
+  const groups = new Map([
+    ["Length", []],
+    ["Entropy", []],
+    ["Patterns", []],
+    ["Dictionary", []],
+    ["Reuse", []],
+    ["Other", []],
+  ]);
+
+  for (const r of items ?? []) {
+    const s = String(r);
+
+    if (/\blength\b|Too short \(</i.test(s) || /Good length|Acceptable length/i.test(s)) {
+      groups.get("Length").push(s);
+    } else if (/entropy/i.test(s)) {
+      groups.get("Entropy").push(s);
+    } else if (/^Pattern detected:/i.test(s) || /keyboard-walk|sequential|repeated/i.test(s)) {
+      groups.get("Patterns").push(s);
+    } else if (/^Dictionary word detected:/i.test(s) || /dictionary/i.test(s)) {
+      groups.get("Dictionary").push(s);
+    } else if (/reuse|reused|local history/i.test(s)) {
+      groups.get("Reuse").push(s);
+    } else {
+      groups.get("Other").push(s);
+    }
+  }
+
+  for (const [name, arr] of groups.entries()) {
+    if (!arr || arr.length === 0) continue;
+
+    const header = document.createElement("li");
+    header.className = "reason-header";
+    header.textContent = name;
+    ul.appendChild(header);
+
+    for (const s of arr) {
+      const li = document.createElement("li");
+      li.textContent = s;
+      ul.appendChild(li);
+    }
   }
 }
 

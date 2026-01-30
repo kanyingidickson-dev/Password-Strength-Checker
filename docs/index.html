@@ -67,9 +67,9 @@
 
               <div class="field">
                 <label>Checks</label>
-                <label><input id="toggle-patterns" type="checkbox" checked /> Pattern checks</label>
-                <label><input id="toggle-dictionary" type="checkbox" checked /> Dictionary word checks</label>
-                <label><input id="toggle-reuse" type="checkbox" checked /> Local reuse check</label>
+                <label class="check"><input id="toggle-patterns" type="checkbox" checked /> Pattern checks</label>
+                <label class="check"><input id="toggle-dictionary" type="checkbox" checked /> Dictionary word checks</label>
+                <label class="check"><input id="toggle-reuse" type="checkbox" checked /> Local reuse check</label>
               </div>
 
               <div class="field">
@@ -93,12 +93,12 @@
 
             <div class="row">
               <button id="analyze" class="btn" type="button">Analyze</button>
-              <button id="clear-history" class="btn btn-secondary" type="button">Clear local history</button>
+              <button id="clear-history" class="btn btn-danger" type="button">Clear local history</button>
               <button id="export-json" class="btn btn-secondary" type="button">Export JSON</button>
             </div>
           </div>
 
-          <div class="card span-3">
+          <div class="card span-3 strength-results">
             <h2>Results</h2>
             <div class="metric">
               <div class="metric__label">Score</div>
@@ -127,7 +127,7 @@
             </div>
           </div>
 
-          <div class="card span-3">
+          <div class="card span-3 strength-reasons">
             <h2>What the tool noticed</h2>
             <ul id="reasons" class="list"></ul>
             <div class="note">
