@@ -24,12 +24,37 @@ function setText(id, value) {
   $(id).textContent = value;
 }
 
-function setOutput(id, value) {
-  $(id).textContent = value || "—";
+function setOutput(id, value, options) {
+  const el = $(id);
+  const text = value || "—";
+  el.textContent = text;
+  el.classList.remove("is-success", "is-error", "is-empty");
+
+  if (!value || text === "—") {
+    el.classList.add("is-empty");
+    return;
+  }
+
+  if (options?.status === "error") {
+    el.classList.add("is-error");
+  } else if (options?.status === "success") {
+    el.classList.add("is-success");
+  }
+}
+
+function setPill(id, text, tone = "is-neutral") {
+  const el = $(id);
+  el.textContent = text;
+  el.classList.remove("is-good", "is-warn", "is-bad", "is-neutral");
+  if (tone) el.classList.add(tone);
 }
 
 function normalizeHashText(s) {
   return String(s).trim().replaceAll(/\s+/g, "").toLowerCase();
+}
+
+function normalizeBase64Text(s) {
+  return String(s).trim().replaceAll(/\s+/g, "");
 }
 
 function setMeter(score) {
@@ -82,11 +107,84 @@ function renderReasons(items) {
       ul.appendChild(li);
     }
   }
+
+  if (!ul.firstChild) {
+    const li = document.createElement("li");
+    li.className = "is-empty";
+    li.textContent = "Analyze a password to see the detailed feedback here.";
+    ul.appendChild(li);
+  }
 }
 
 async function copyToClipboard(text) {
   if (!text || text === "—") return;
   await navigator.clipboard.writeText(text);
+}
+
+async function copyWithFeedback(button, text) {
+  if (!button) return;
+
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.classList.remove("is-copied", "is-error");
+
+  try {
+    await copyToClipboard(text);
+    button.textContent = "Copied!";
+    button.classList.add("is-copied");
+  } catch {
+    button.textContent = "Copy failed";
+    button.classList.add("is-error");
+  }
+
+  window.setTimeout(() => {
+    button.textContent = originalText;
+    button.classList.remove("is-copied", "is-error");
+    button.disabled = false;
+  }, 1200);
+}
+
+function installSecretToggle(toggleButton, input, options) {
+  if (!toggleButton || !input) return;
+  const timeoutMs = Number(options?.timeoutMs ?? 10_000);
+  let hideTimer = null;
+
+  function setHidden() {
+    input.type = "password";
+    toggleButton.textContent = "Show";
+    if (hideTimer) {
+      window.clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+  }
+
+  function setVisible() {
+    input.type = "text";
+    toggleButton.textContent = "Hide";
+    if (hideTimer) window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => setHidden(), timeoutMs);
+  }
+
+  toggleButton.addEventListener("click", () => {
+    const visible = input.type === "text";
+    if (visible) setHidden();
+    else setVisible();
+  });
+
+  window.addEventListener("pagehide", () => setHidden());
+}
+
+function autoGrowTextarea(el) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+}
+
+function installAutoGrowTextareas() {
+  for (const el of document.querySelectorAll("textarea")) {
+    autoGrowTextarea(el);
+    el.addEventListener("input", () => autoGrowTextarea(el));
+  }
 }
 
 let commonSet = null;
@@ -169,7 +267,8 @@ async function runAnalysis(password, options) {
   lastAnalysis = analysis;
 
   setText("score", String(analysis.score));
-  setText("label", analysis.label);
+  const tone = analysis.score >= 80 ? "is-good" : analysis.score >= 50 ? "is-warn" : "is-bad";
+  setPill("label", analysis.label, tone);
   setText("entropy", analysis.entropyBits.toFixed(1));
   setText("shannon", (analysis.shannonEntropyBits ?? 0).toFixed(1));
   setText("reuse", analysis.isReused ? "reused" : "not seen");
@@ -190,6 +289,21 @@ function handleStrength() {
   if (!$maybe("pwd")) return;
   const pwd = $("pwd");
   const pepper = $("pepper");
+
+  if ($maybe("reasons")) {
+    renderReasons(null);
+  }
+
+  const advanced = $maybe("advanced-details");
+  if (advanced) {
+    const mm = window.matchMedia("(max-width: 900px)");
+    const apply = () => {
+      if (mm.matches) advanced.open = false;
+      else advanced.open = true;
+    };
+    apply();
+    mm.addEventListener("change", apply);
+  }
 
   $("wordlist").addEventListener("change", async () => {
     const input = $("wordlist");
@@ -218,11 +332,8 @@ function handleStrength() {
     });
   }
 
-  $("toggle-visibility").addEventListener("click", () => {
-    const visible = pwd.type === "text";
-    pwd.type = visible ? "password" : "text";
-    $("toggle-visibility").textContent = visible ? "Show" : "Hide";
-  });
+  installSecretToggle($maybe("toggle-visibility"), pwd, { timeoutMs: 10_000 });
+  installSecretToggle($maybe("toggle-pepper"), pepper, { timeoutMs: 10_000 });
 
   $("analyze").addEventListener("click", async () => {
     try {
@@ -231,6 +342,17 @@ function handleStrength() {
       renderReasons([String(e?.message ?? e)]);
     }
   });
+
+  const analyzeAdvanced = $maybe("analyze-advanced");
+  if (analyzeAdvanced) {
+    analyzeAdvanced.addEventListener("click", async () => {
+      try {
+        await runAnalysis(pwd.value, { pepper: pepper.value });
+      } catch (e) {
+        renderReasons([String(e?.message ?? e)]);
+      }
+    });
+  }
 
   pwd.addEventListener("keydown", async (ev) => {
     if (ev.key !== "Enter") return;
@@ -281,14 +403,14 @@ function handleGenerator() {
     };
     try {
       lastGenerated = generatePassword(opts);
-      setOutput("generated", lastGenerated);
+      setOutput("generated", lastGenerated, { status: "success" });
     } catch (e) {
-      setOutput("generated", String(e?.message ?? e));
+      setOutput("generated", String(e?.message ?? e), { status: "error" });
     }
   });
 
   $("copy-generated").addEventListener("click", async () => {
-    await copyToClipboard($("generated").textContent ?? "");
+    await copyWithFeedback($("copy-generated"), $("generated").textContent ?? "");
   });
 
   $("analyze-generated").addEventListener("click", async () => {
@@ -300,38 +422,68 @@ function handleGenerator() {
 
 function handleHashPage() {
   if (!$maybe("do-hash")) return;
+  installSecretToggle($maybe("toggle-hmac-key"), $maybe("hmac-key"), { timeoutMs: 10_000 });
+
+  function updateHashMatch() {
+    const expectedEl = $maybe("hash-expected");
+    const outEl = $maybe("hash-out");
+    const matchEl = $maybe("hash-match");
+    if (!expectedEl || !outEl || !matchEl) return;
+
+    const expected = String(expectedEl.value ?? "").trim();
+    const out = String(outEl.textContent ?? "");
+
+    const formatEl = $maybe("hash-format");
+    const format = String(formatEl?.value ?? "hex");
+
+    if (!expected) {
+      setPill("hash-match", "—", "is-neutral");
+      return;
+    }
+
+    if (!out || out === "—") {
+      setPill("hash-match", "—", "is-neutral");
+      return;
+    }
+
+    const normalize = format === "base64" ? normalizeBase64Text : normalizeHashText;
+    const ok = normalize(out) === normalize(expected);
+    setPill("hash-match", ok ? "match" : "no match", ok ? "is-good" : "is-bad");
+  }
+
   $("do-hash").addEventListener("click", async () => {
     const text = $("crypto-text").value;
     const algo = $("hash-algo").value;
     const format = $("hash-format").value;
     const key = $("hmac-key").value;
-    const expected = $("hash-expected").value;
 
     try {
       const out = key
         ? await hmacText(algo, key, text, format)
         : await digestText(algo, text, format);
-      setOutput("hash-out", out);
+      setOutput("hash-out", out, { status: "success" });
 
-      if (expected.trim()) {
-        const ok = normalizeHashText(out) === normalizeHashText(expected);
-        setText("hash-match", ok ? "match" : "no match");
-      } else {
-        setText("hash-match", "—");
-      }
+      updateHashMatch();
     } catch (e) {
-      setOutput("hash-out", String(e?.message ?? e));
-      setText("hash-match", "—");
+      setOutput("hash-out", String(e?.message ?? e), { status: "error" });
+      setPill("hash-match", "—", "is-neutral");
     }
   });
 
+  const expectedEl = $maybe("hash-expected");
+  if (expectedEl) {
+    expectedEl.addEventListener("input", () => updateHashMatch());
+    expectedEl.addEventListener("change", () => updateHashMatch());
+  }
+
   $("copy-hash").addEventListener("click", async () => {
-    await copyToClipboard($("hash-out").textContent ?? "");
+    await copyWithFeedback($("copy-hash"), $("hash-out").textContent ?? "");
   });
 }
 
 function handlePbkdf2Page() {
   if (!$maybe("do-kdf")) return;
+  installSecretToggle($maybe("toggle-kdf-password"), $maybe("kdf-password"), { timeoutMs: 10_000 });
   $("do-kdf").addEventListener("click", async () => {
     const pw = $("kdf-password").value;
     const salt = $("kdf-salt").value;
@@ -340,39 +492,41 @@ function handlePbkdf2Page() {
 
     try {
       const out = await pbkdf2(pw, salt, iter, len);
-      setOutput("kdf-out", out);
+      setOutput("kdf-out", out, { status: "success" });
     } catch (e) {
-      setOutput("kdf-out", String(e?.message ?? e));
+      setOutput("kdf-out", String(e?.message ?? e), { status: "error" });
     }
   });
 
   $("copy-kdf").addEventListener("click", async () => {
-    await copyToClipboard($("kdf-out").textContent ?? "");
+    await copyWithFeedback($("copy-kdf"), $("kdf-out").textContent ?? "");
   });
 }
 
 function handleAesGcmPage() {
   if (!$maybe("do-encrypt")) return;
+  installSecretToggle($maybe("toggle-aes-key"), $maybe("aes-key"), { timeoutMs: 10_000 });
   $("do-encrypt").addEventListener("click", async () => {
     try {
       const out = await aesGcmEncrypt($("aes-key").value, $("aes-plain").value);
-      setOutput("aes-cipher", out);
+      setOutput("aes-cipher", out, { status: "success" });
       $("aes-input").value = out;
+      autoGrowTextarea($maybe("aes-input"));
     } catch (e) {
-      setOutput("aes-cipher", String(e?.message ?? e));
+      setOutput("aes-cipher", String(e?.message ?? e), { status: "error" });
     }
   });
 
   $("copy-cipher").addEventListener("click", async () => {
-    await copyToClipboard($("aes-cipher").textContent ?? "");
+    await copyWithFeedback($("copy-cipher"), $("aes-cipher").textContent ?? "");
   });
 
   $("do-decrypt").addEventListener("click", async () => {
     try {
       const out = await aesGcmDecrypt($("aes-key").value, $("aes-input").value);
-      setOutput("aes-plain-out", out);
+      setOutput("aes-plain-out", out, { status: "success" });
     } catch (e) {
-      setOutput("aes-plain-out", String(e?.message ?? e));
+      setOutput("aes-plain-out", String(e?.message ?? e), { status: "error" });
     }
   });
 }
@@ -381,23 +535,31 @@ function handleBase64Page() {
   if (!$maybe("b64-encode")) return;
   $("b64-encode").addEventListener("click", () => {
     try {
-      setOutput("b64-out", base64EncodeText($("b64-in").value));
+      setOutput("b64-out", base64EncodeText($("b64-in").value), { status: "success" });
     } catch (e) {
-      setOutput("b64-out", String(e?.message ?? e));
+      setOutput("b64-out", String(e?.message ?? e), { status: "error" });
     }
   });
 
   $("b64-decode").addEventListener("click", () => {
     try {
-      setOutput("b64-out", base64DecodeToText($("b64-in").value));
+      setOutput("b64-out", base64DecodeToText($("b64-in").value), { status: "success" });
     } catch (e) {
-      setOutput("b64-out", String(e?.message ?? e));
+      setOutput("b64-out", String(e?.message ?? e), { status: "error" });
     }
   });
+
+  const copyBtn = $maybe("copy-b64");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      await copyWithFeedback(copyBtn, $("b64-out").textContent ?? "");
+    });
+  }
 }
 
 async function init() {
   handleNav();
+  installAutoGrowTextareas();
   handleStrength();
   handleGenerator();
   handleHashPage();
