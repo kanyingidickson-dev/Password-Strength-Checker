@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.breach import check_pwned_password_k_anonymity
-from src.entropy import estimate_entropy_bits
+from src.entropy import estimate_entropy_bits, estimate_shannon_entropy_bits
 from src.patterns import detect_patterns
 from src.reuse import ReuseResult, check_reuse, save_to_history
 
@@ -14,6 +14,7 @@ class Analysis:
     score: int
     label: str
     entropy_bits: float
+    shannon_entropy_bits: float
     reasons: list[str]
     is_reused: bool
     breach_count: int | None
@@ -43,6 +44,7 @@ def analyze_password(
             score=0,
             label="weak",
             entropy_bits=0.0,
+            shannon_entropy_bits=0.0,
             reasons=["Password is empty"],
             is_reused=False,
             breach_count=None,
@@ -62,6 +64,7 @@ def analyze_password(
         score += 25
 
     entropy = estimate_entropy_bits(password)
+    shannon_entropy = estimate_shannon_entropy_bits(password)
     if entropy < 40:
         reasons.append(f"Low estimated entropy ({entropy:.1f} bits)")
         score -= 20
@@ -71,6 +74,10 @@ def analyze_password(
     else:
         reasons.append(f"High estimated entropy ({entropy:.1f} bits)")
         score += 25
+
+    if shannon_entropy < 25:
+        reasons.append(f"Low Shannon entropy signal ({shannon_entropy:.1f} bits)")
+        score -= 10
 
     hits = detect_patterns(password, common_passwords_path)
     for hit in hits:
@@ -109,6 +116,7 @@ def analyze_password(
         score=score,
         label=_label(score),
         entropy_bits=entropy,
+        shannon_entropy_bits=shannon_entropy,
         reasons=reasons,
         is_reused=reuse.is_reused,
         breach_count=breach_count,

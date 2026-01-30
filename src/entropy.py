@@ -38,3 +38,20 @@ def estimate_entropy_bits(password: str) -> float:
 
     charset = estimate_charset_size(password)
     return len(password) * math.log2(charset)
+
+
+def estimate_shannon_entropy_bits(password: str) -> float:
+    if not password:
+        return 0.0
+
+    counts: dict[str, int] = {}
+    for c in password:
+        counts[c] = counts.get(c, 0) + 1
+
+    n = len(password)
+    h = 0.0
+    for count in counts.values():
+        p = count / n
+        h -= p * math.log2(p)
+
+    return h * n

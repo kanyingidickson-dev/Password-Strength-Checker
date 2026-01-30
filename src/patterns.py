@@ -1,15 +1,44 @@
 from __future__ import annotations
 
+import importlib.resources
 from dataclasses import dataclass
 from pathlib import Path
 
-_COMMON_KEYBOARD_WALKS = [
-    "qwerty",
-    "asdfgh",
-    "zxcvbn",
-    "12345",
-    "67890",
-]
+
+def _build_keyboard_adjacency() -> dict[str, set[str]]:
+    rows = [
+        "`1234567890-=",
+        "qwertyuiop[]\\",
+        "asdfghjkl;'",
+        "zxcvbnm,./",
+    ]
+
+    pos: dict[str, tuple[int, int]] = {}
+    for y, row in enumerate(rows):
+        for x, c in enumerate(row):
+            pos[c] = (x, y)
+
+    adj: dict[str, set[str]] = {}
+    for c, (x0, y0) in pos.items():
+        out: set[str] = set()
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dx == 0 and dy == 0:
+                    continue
+                x = x0 + dx
+                y = y0 + dy
+                if y < 0 or y >= len(rows):
+                    continue
+                row = rows[y]
+                if x < 0 or x >= len(row):
+                    continue
+                out.add(row[x])
+        adj[c] = out
+
+    return adj
+
+
+_KEYBOARD_ADJ = _build_keyboard_adjacency()
 
 
 @dataclass(frozen=True)
@@ -59,18 +88,37 @@ def has_simple_sequence(password: str) -> bool:
 
 def has_keyboard_walk(password: str) -> bool:
     p = password.lower()
-    for walk in _COMMON_KEYBOARD_WALKS:
-        if walk in p or walk[::-1] in p:
-            return True
+    run = 1
+    for i in range(1, len(p)):
+        prev = p[i - 1]
+        cur = p[i]
+        neigh = _KEYBOARD_ADJ.get(prev)
+        if neigh is not None and cur in neigh:
+            run += 1
+            if run >= 4:
+                return True
+        else:
+            run = 1
     return False
 
 
 def is_common_password(password: str, common_passwords_path: Path) -> bool:
-    if not common_passwords_path.exists():
-        return False
-
     p = password.strip().lower()
-    for line in common_passwords_path.read_text(encoding="utf-8").splitlines():
+
+    if common_passwords_path.exists():
+        lines = common_passwords_path.read_text(encoding="utf-8").splitlines()
+    else:
+        try:
+            lines = (
+                importlib.resources.files("src.data")
+                .joinpath("common_passwords.txt")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            )
+        except (FileNotFoundError, ModuleNotFoundError):
+            return False
+
+    for line in lines:
         w = line.strip().lower()
         if not w or w.startswith("#"):
             continue
