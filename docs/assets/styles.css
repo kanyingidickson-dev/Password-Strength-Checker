@@ -23,9 +23,7 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0;
-  background: radial-gradient(1200px 600px at 12% 0%, rgba(122, 162, 255, 0.18), transparent 45%),
-              radial-gradient(900px 500px at 85% 0%, rgba(114, 227, 197, 0.14), transparent 52%),
-              var(--bg);
+  background: var(--bg);
   color: var(--text);
   font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
     Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
@@ -145,7 +143,7 @@ main.container {
 }
 
 .navlink.is-active {
-  background: linear-gradient(135deg, rgba(122, 162, 255, 0.25), rgba(114, 227, 197, 0.18));
+  background: rgba(122, 162, 255, 0.16);
   border-color: rgba(122, 162, 255, 0.45);
 }
 
@@ -166,7 +164,7 @@ main.container {
 }
 
 .tab.is-active {
-  background: linear-gradient(135deg, rgba(122, 162, 255, 0.25), rgba(114, 227, 197, 0.18));
+  background: rgba(122, 162, 255, 0.16);
   border-color: rgba(122, 162, 255, 0.45);
 }
 
@@ -263,7 +261,7 @@ main.container {
 .span-3 { grid-column: span 3; }
 
 .card {
-  background: linear-gradient(180deg, rgba(15, 24, 48, 0.92), rgba(15, 24, 48, 0.78));
+  background: rgba(15, 24, 48, 0.88);
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 14px 34px var(--shadow);
@@ -423,7 +421,7 @@ input:focus, select:focus, textarea:focus {
 
 .btn {
   border: 1px solid rgba(122, 162, 255, 0.35);
-  background: linear-gradient(135deg, rgba(122, 162, 255, 0.28), rgba(114, 227, 197, 0.14));
+  background: rgba(122, 162, 255, 0.16);
   color: var(--text);
   padding: 10px 14px;
   border-radius: 12px;
@@ -529,9 +527,21 @@ input:focus, select:focus, textarea:focus {
 .meter__fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--danger), var(--warn), var(--accent-2));
+  background: rgba(232, 238, 252, 0.22);
   border-radius: 999px;
   transition: width 220ms ease;
+}
+
+.meter__fill.is-good {
+  background: var(--accent-2);
+}
+
+.meter__fill.is-warn {
+  background: var(--warn);
+}
+
+.meter__fill.is-bad {
+  background: var(--danger);
 }
 
 .pill {
@@ -612,7 +622,7 @@ input:focus, select:focus, textarea:focus {
   bottom: 10px;
   width: 3px;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(122, 162, 255, 0.8), rgba(114, 227, 197, 0.7));
+  background: rgba(122, 162, 255, 0.7);
 }
 
 .list li.reason-header {
@@ -723,7 +733,7 @@ fieldset {
   margin: -6px -8px 8px;
   border-radius: 12px;
   border: 1px solid rgba(122, 162, 255, 0.22);
-  background: linear-gradient(135deg, rgba(122, 162, 255, 0.14), rgba(114, 227, 197, 0.08));
+  background: rgba(122, 162, 255, 0.10);
   transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
