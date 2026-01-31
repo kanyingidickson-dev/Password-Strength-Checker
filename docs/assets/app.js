@@ -59,7 +59,11 @@ function normalizeBase64Text(s) {
 
 function setMeter(score) {
   const el = $("meter-fill");
-  el.style.width = `${Math.max(0, Math.min(100, score))}%`;
+  const clamped = Math.max(0, Math.min(100, score));
+  el.style.width = `${clamped}%`;
+  el.classList.remove("is-good", "is-warn", "is-bad");
+  const tone = clamped >= 80 ? "is-good" : clamped >= 50 ? "is-warn" : "is-bad";
+  el.classList.add(tone);
 }
 
 function renderReasons(items) {
